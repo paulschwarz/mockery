@@ -108,6 +108,15 @@ class ContainerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('foo', $m->foo());
         $this->assertTrue($m instanceof MockeryTestFoo2);
     }
+	
+	public function testCreatingAPartialAllowsExpectationsToInterceptCallsToImplementedMethodsInternally()
+	{
+		$m = $this->container->mock(new MockeryTestFoo5);
+        $m->shouldReceive('bar')->andReturn('baz');
+		$this->assertEquals('baz', $m->bar());
+        $this->assertEquals('baz', $m->foo());
+        $this->assertTrue($m instanceof MockeryTestFoo5);
+	}
 
     public function testBlockForwardingToPartialObject()
     {
@@ -664,6 +673,11 @@ final class MockeryFoo3 {
 
 class MockeryFoo4 {
     final public function foo() { return 'baz'; }
+    public function bar() { return 'bar'; }
+}
+
+class MockeryTestFoo5 {
+    public function foo() { return $this->bar(); }
     public function bar() { return 'bar'; }
 }
 
